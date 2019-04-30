@@ -6,7 +6,8 @@ const knexConfig = {
   connection: {
     filename: "./data/lambda.sqlite3"
   },
-  useNullAsDefault: true
+  useNullAsDefault: true,
+  debug: true
 };
 
 const db = knex(knexConfig);
@@ -29,7 +30,14 @@ router.post("/", async (req, res) => {
   }
   try {
     const addZoo = await db("zoos").insert(req.body, "id");
-    res.status(201).json(addZoo);
+    const getAddedZoo = await db("zoos")
+      .where({ id: addZoo[0] })
+      .first();
+    if (!getAddedZoo) {
+      res.status(404).json({ msg: "no id found" });
+    } else {
+      res.status(201).json(getAddedZoo);
+    }
   } catch (err) {
     res.status(500).json({ msg: err });
   }
@@ -54,13 +62,18 @@ router.get("/:id", async (req, res) => {
 //delete zoo
 router.delete("/:id", async (req, res) => {
   try {
+    const getDeleteZoo = await db("zoos")
+      .where({ id: req.params.id })
+      .first();
+
     const deleteZoo = await db("zoos")
       .where({ id: req.params.id })
-      .delete(req.body);
-    if (deleteZoo > 0) {
-      res.status(200).json(deleteZoo);
+      .delete(req.body, "id");
+
+    if (!getDeleteZoo) {
+      res.status(404).json({ msg: "id does not exist" });
     } else {
-      res.status(404).json({ msg: "no zoo to delete" });
+      res.status(200).json(getDeleteZoo);
     }
   } catch (err) {
     res.status(500).json({ msg: err });
