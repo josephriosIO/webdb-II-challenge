@@ -34,4 +34,21 @@ router.post("/", async (req, res) => {
     res.status(500).json({ msg: err });
   }
 });
+
+// get certain bear by id
+router.get("/:id", async (req, res) => {
+  try {
+    const getBear = await db("bears")
+      .where({ id: req.params.id })
+      .first();
+    if (!getBear) {
+      res.status(404).json({ msg: "id not found" });
+    } else {
+      res.status(200).json(getBear);
+    }
+  } catch (err) {
+    res.status(500).json({ msg: err });
+  }
+});
+
 module.exports = router;
