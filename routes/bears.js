@@ -51,4 +51,23 @@ router.get("/:id", async (req, res) => {
   }
 });
 
+//delete bear
+router.delete("/:id", async (req, res) => {
+  try {
+    const getDeletedbear = await db("bears")
+      .where({ id: req.params.id })
+      .first();
+    const deleteBear = await db("bears")
+      .where({ id: req.params.id })
+      .delete(req.body);
+    if (!getDeletedbear) {
+      res.status(404).json({ msg: "no id found to delete" });
+    } else {
+      res.status(200).json(getDeletedbear);
+    }
+  } catch (err) {
+    res.status(500).json({ msg: err });
+  }
+});
+
 module.exports = router;
