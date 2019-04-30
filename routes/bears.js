@@ -22,4 +22,16 @@ router.get("/", async (req, res) => {
   }
 });
 
+//post new bear
+router.post("/", async (req, res) => {
+  if (!req.body.name) {
+    res.status(404).json({ msg: "please enter name for bear" });
+  }
+  try {
+    const addBear = await db("bears").insert(req.body, "id");
+    res.status(201).json(addBear);
+  } catch (err) {
+    res.status(500).json({ msg: err });
+  }
+});
 module.exports = router;
