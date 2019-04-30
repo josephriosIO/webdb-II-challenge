@@ -23,12 +23,29 @@ router.get("/", async (req, res) => {
 
 //add a zoo to the database
 router.post("/", async (req, res) => {
+  //
   if (!req.body.name) {
     return res.status(404).json({ msg: "please enter a zoo name" });
   }
   try {
     const addZoo = await db("zoos").insert(req.body, "id");
-    res.json(addZoo);
+    res.status(201).json(addZoo);
+  } catch (err) {
+    res.status(500).json({ msg: err });
+  }
+});
+
+//get certain zoo by id
+router.get("/:id", async (req, res) => {
+  try {
+    const zooById = await db("zoos")
+      .where({ id: req.params.id })
+      .first();
+    if (!zooById) {
+      res.status(404).json({ msg: "id does not exist" });
+    } else {
+      res.status(200).json(zooById);
+    }
   } catch (err) {
     res.status(500).json({ msg: err });
   }
