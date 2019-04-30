@@ -67,4 +67,22 @@ router.delete("/:id", async (req, res) => {
   }
 });
 
+//update zoo
+router.put("/:id", async (req, res) => {
+  if (!req.body.name) {
+    res.status(404).json({ msg: "please enter name of zoo" });
+  }
+  try {
+    const updateZoo = await db("zoos")
+      .where({ id: req.params.id })
+      .update(req.body);
+    if (updateZoo > 0) {
+      res.status(200).json(updateZoo);
+    } else {
+      res.status(404).json({ msg: "theres no zoo to update." });
+    }
+  } catch (err) {
+    res.status(500).json({ msg: err });
+  }
+});
 module.exports = router;
