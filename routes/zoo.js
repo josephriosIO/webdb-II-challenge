@@ -86,13 +86,13 @@ router.put("/:id", async (req, res) => {
     res.status(404).json({ msg: "please enter name of zoo" });
   }
   try {
-    const getUpdatedZoo = await db("zoos")
-      .where({ id: req.params.id })
-      .first();
-
     const updateZoo = await db("zoos")
       .where({ id: req.params.id })
       .update(req.body);
+
+    const getUpdatedZoo = await db("zoos")
+      .where({ id: req.params.id })
+      .first();
 
     if (updateZoo > 0) {
       res.status(200).json(getUpdatedZoo);
