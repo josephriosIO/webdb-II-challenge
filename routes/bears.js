@@ -6,8 +6,7 @@ const knexConfig = {
   connection: {
     filename: "./data/lambda.sqlite3"
   },
-  useNullAsDefault: true,
-  debug: true
+  useNullAsDefault: true
 };
 
 const db = knex(knexConfig);
@@ -64,6 +63,28 @@ router.delete("/:id", async (req, res) => {
       res.status(404).json({ msg: "no id found to delete" });
     } else {
       res.status(200).json(getDeletedbear);
+    }
+  } catch (err) {
+    res.status(500).json({ msg: err });
+  }
+});
+
+//update bear
+router.put("/:id", async (req, res) => {
+  if (!req.body.name) {
+    return res.status(404).json({ msg: "please enter name for bear" });
+  }
+  try {
+    const updateBear = await db("bears")
+      .where({ id: req.params.id })
+      .update(req.body);
+    const getUpdatedBear = await db("bears")
+      .where({ id: req.params.id })
+      .first();
+    if (!getUpdatedBear) {
+      res.status(404).json({ msg: "id not found to update bear" });
+    } else {
+      res.status(200).json(getUpdatedBear);
     }
   } catch (err) {
     res.status(500).json({ msg: err });
