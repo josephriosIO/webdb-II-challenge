@@ -51,4 +51,20 @@ router.get("/:id", async (req, res) => {
   }
 });
 
+//delete zoo
+router.delete("/:id", async (req, res) => {
+  try {
+    const deleteZoo = await db("zoos")
+      .where({ id: req.params.id })
+      .delete(req.body);
+    if (deleteZoo > 0) {
+      res.status(200).json(deleteZoo);
+    } else {
+      res.status(404).json({ msg: "no zoo to delete" });
+    }
+  } catch (err) {
+    res.status(500).json({ msg: err });
+  }
+});
+
 module.exports = router;
